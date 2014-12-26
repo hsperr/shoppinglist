@@ -7,18 +7,18 @@ import java.util.ArrayList;
  */
 public class DataLoader {
 
-    ArrayList<String> data = new ArrayList<String>();
+    ArrayList<ShoppingModel> data = new ArrayList<ShoppingModel>();
     DataLoader(){
         loadData();
     }
 
     private void loadData(){
         //TODO: add loading data from file
-        data.add("Karotten");
-        data.add("Salat");
+        data.add(new ShoppingModel("Karotten", false));
+        data.add(new ShoppingModel("Salad", true));
     }
 
-    ArrayList<String> getData(){
+    ArrayList<ShoppingModel> getData(){
         return data;
     }
 

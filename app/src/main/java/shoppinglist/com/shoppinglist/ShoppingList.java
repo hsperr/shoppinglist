@@ -4,8 +4,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 public class ShoppingList extends ActionBarActivity {
@@ -17,11 +21,17 @@ public class ShoppingList extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
-        ArrayAdapter<String> shoppingListAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, dataLoader.getData());
+        ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, dataLoader.getData());
 
         ListView shoppingList = (ListView)findViewById(R.id.shopping_list);
         shoppingList.setAdapter(shoppingListAdapter);
+        shoppingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(view.getContext(), dataLoader.getData().get(position).name, Toast.LENGTH_LONG).show();
+                dataLoader.getData().get(position).bought = !dataLoader.getData().get(position).bought;
+            }
+        });
 
     }
 
