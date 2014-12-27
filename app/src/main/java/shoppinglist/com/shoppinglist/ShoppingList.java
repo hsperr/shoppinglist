@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import shoppinglist.com.shoppinglist.data.DummyLoader;
+import shoppinglist.com.shoppinglist.data.FileHandler;
 
 
 public class ShoppingList extends ActionBarActivity {
@@ -25,7 +26,7 @@ public class ShoppingList extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
-        data = new DummyLoader().readDataFile(this);
+        data = new FileHandler().readDataFile(this);
         final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, data);
 
         final ListView shoppingList = (ListView)findViewById(R.id.shopping_list);
@@ -61,6 +62,7 @@ public class ShoppingList extends ActionBarActivity {
             public void onClick(View v) {
                 TextView inputText = (TextView)findViewById(R.id.shopping_input);
                 inputText.setText("");
+                new FileHandler().writeData(data, ShoppingList.this);
                 data.clear();
                 shoppingListAdapter.notifyDataSetChanged();
             }
