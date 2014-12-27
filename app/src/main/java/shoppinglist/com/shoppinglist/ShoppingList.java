@@ -2,37 +2,91 @@ package shoppinglist.com.shoppinglist;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import shoppinglist.com.shoppinglist.data.DummyLoader;
 
 
 public class ShoppingList extends ActionBarActivity {
 
-    DataLoader dataLoader = new DataLoader();
 
+    ArrayList<ShoppingModel> data = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
-        ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, dataLoader.getData());
+        data = new DummyLoader().readDataFile(this);
+        final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, data);
 
-        ListView shoppingList = (ListView)findViewById(R.id.shopping_list);
+        final ListView shoppingList = (ListView)findViewById(R.id.shopping_list);
         shoppingList.setAdapter(shoppingListAdapter);
-        shoppingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        Button addButton = (Button)findViewById(R.id.add_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(view.getContext(), dataLoader.getData().get(position).name, Toast.LENGTH_LONG).show();
-                dataLoader.getData().get(position).bought = !dataLoader.getData().get(position).bought;
+            public void onClick(View v) {
+                TextView inputText = (TextView)findViewById(R.id.shopping_input);
+                String newItemName = String.valueOf(inputText.getText());
+                if(!newItemName.matches("")) {
+                    inputText.setText("");
+                    data.add(new ShoppingModel(newItemName, false));
+                    shoppingListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+        Button clearButton = (Button)findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView inputText = (TextView)findViewById(R.id.shopping_input);
+                inputText.setText("");
+                data.clear();
+                shoppingListAdapter.notifyDataSetChanged();
             }
         });
 
+        Button newButton = (Button)findViewById(R.id.new_button);
+        newButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView inputText = (TextView)findViewById(R.id.shopping_input);
+                inputText.setText("");
+                data.clear();
+                shoppingListAdapter.notifyDataSetChanged();
+            }
+        });
+
+        shoppingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                data.get(position).bought = !data.get(position).bought;
+                for(ShoppingModel model: data){
+                    Log.e("ShortClick", model.name+" "+model.bought);
+                }
+            }
+        });
+
+        shoppingList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                data.remove(position);
+                for(ShoppingModel model: data){
+                    Log.e("LongClick", model.name+" "+model.bought);
+                }
+                shoppingListAdapter.notifyDataSetChanged();
+                return true;
+            }
+        });
     }
 
     @Override

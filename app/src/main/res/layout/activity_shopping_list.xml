@@ -42,4 +42,22 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_clear"
+        android:id="@+id/clear_button"
+        android:layout_below="@+id/shopping_input"
+        android:layout_toLeftOf="@+id/add_button"
+        android:layout_toStartOf="@+id/add_button" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_new"
+        android:id="@+id/new_button"
+        android:layout_below="@+id/shopping_input"
+        android:layout_toLeftOf="@+id/clear_button"
+        android:layout_toStartOf="@+id/clear_button" />
+
 </RelativeLayout>
