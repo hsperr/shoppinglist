@@ -44,26 +44,26 @@ public class ShoppingListAdapter extends BaseAdapter{
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+        LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.row, parent, false);
-            TextView name = (TextView)convertView.findViewById(R.id.textView1);
-            CheckBox cb = (CheckBox)convertView.findViewById(R.id.checkBox1);
-            name.setFocusable(false);
-            name.setClickable(false);
+        }
 
-            cb.setClickable(false);
-            cb.setFocusableInTouchMode(false);
-            cb.setFocusable(false);
-
-            cb.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    Log.i("checkbox", shoppingData.get(position).name+" p "+position+" "+((CheckBox)v).isChecked());
-                    shoppingData.get(position).bought = ((CheckBox)v).isChecked();
-                }
-            });
+        final TextView name = (TextView)convertView.findViewById(R.id.textView1);
+        final CheckBox cb = (CheckBox)convertView.findViewById(R.id.checkBox1);
 
         name.setText(shoppingData.get(position).name);
         cb.setChecked(shoppingData.get(position).bought);
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                cb.toggle();
+                Log.i("checkbox", shoppingData.get(position).name + " p " + position + " " + cb.isChecked());
+                shoppingData.get(position).bought = cb.isChecked();
+            }
+        });
+
 
         return convertView;
     }
