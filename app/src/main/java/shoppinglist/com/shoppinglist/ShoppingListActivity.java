@@ -1,5 +1,6 @@
 package shoppinglist.com.shoppinglist;
 
+import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+
 import java.util.List;
 
 import shoppinglist.com.shoppinglist.database.DatabaseHelper;
@@ -20,11 +25,12 @@ import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedExcepti
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 
-public class ShoppingListActivity extends ActionBarActivity {
+public class ShoppingListActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     ShoppingList shoppingList = null;
     ShoppingListDatabase shoppingListDatabase = null;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +96,15 @@ public class ShoppingListActivity extends ActionBarActivity {
             }
         });
 
-
+//        this.mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API)
+//                    .build();
+//        this.mGoogleApiClient.connect();
+//        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                mGoogleApiClient);
+//        Toast.makeText(ShoppingListActivity.this, ""+mLastLocation, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -113,5 +127,20 @@ public class ShoppingListActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

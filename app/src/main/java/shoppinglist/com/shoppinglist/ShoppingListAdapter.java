@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
@@ -120,14 +121,9 @@ public class ShoppingListAdapter extends BaseAdapter{
                    });
 
                    AlertDialog dialog = builder.create();
-                   dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                       @Override
-                       public void onShow(DialogInterface dialog) {
-                           InputMethodManager imm = (InputMethodManager) ShoppingListAdapter.this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                           imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
-                       }
-                   });
 
+                   dialog.getWindow().setSoftInputMode(
+                           WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                    dialog.show();
 
                    return true;
