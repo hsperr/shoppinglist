@@ -9,4 +9,11 @@
     <string name="action_settings">Settings</string>
 
     <string name="filename">shoppinglist.data</string>
+    <string name="title_activity_camera">Scan a Receipt</string>
+
+    <string name="scan">Scan</string>
+    <string name="cancel">Cancel</string>
+    <string name="torch">Light</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
