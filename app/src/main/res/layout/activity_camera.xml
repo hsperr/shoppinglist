@@ -3,8 +3,8 @@
     android:layout_height="match_parent"
     tools:context="shoppinglist.com.shoppinglist.camera.CameraActivity">
 
-    <shoppinglist.com.shoppinglist.camera.CameraPreviewSurfaceView
-        android:id="@+id/surface"
+    <FrameLayout
+        android:id="@+id/surface_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
