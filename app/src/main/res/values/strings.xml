@@ -19,4 +19,7 @@
 
     <string name="error_camera_acquisition">Unable to access the camera. Check that no other apps are using the camera and try again.</string>
     <string name="TotalPrice">Total Price:</string>
+    <string name="title_activity_shopping_list_list">ShoppingListListActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

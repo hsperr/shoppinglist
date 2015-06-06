@@ -13,6 +13,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -24,6 +28,7 @@ import shoppinglist.com.shoppinglist.database.ShoppingListDatabase;
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
+import shoppinglist.com.shoppinglist.networking.NetBlaster;
 
 public class ShoppingListActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -105,6 +110,26 @@ public class ShoppingListActivity extends ActionBarActivity implements GoogleApi
 //        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
 //                mGoogleApiClient);
 //        Toast.makeText(ShoppingListActivity.this, ""+mLastLocation, Toast.LENGTH_LONG).show();
+    }
+
+    public void onSendRequestClick() {
+        NetBlaster.getInstance(this).addToRequestQueue(new StringRequest(
+                Request.Method.GET, "http://google.com",
+
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i("VolleyResponse", response.substring(0, 500));
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VolleyResponse", error.getMessage());
+                    }
+                }
+        ));
     }
 
     @Override
