@@ -101,4 +101,21 @@ public class ShoppingItem {
         this.model = model;
     }
 
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("Item:"+this.getItemName());
+        builder.append(" - ");
+        builder.append("bought:"+this.isBought());
+        builder.append(" - ");
+        builder.append("price:"+this.getPrice());
+        builder.append(" - ");
+        builder.append("Lat:"+this.getLatitude());
+        builder.append(" - ");
+        builder.append("Lon:"+this.getLongitude());
+        builder.append(" - ");
+        builder.append("Date:"+this.getTimestamp());
+        return builder.toString();
+    }
+
 }

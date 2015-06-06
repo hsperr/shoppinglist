@@ -44,6 +44,7 @@ public class ShoppingListActivity extends ActionBarActivity {
         }
 
         List<ShoppingItem> items = shoppingList.getItems();
+
         final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, items, shoppingListDatabase);
         final ListView shoppingListView = (ListView)findViewById(R.id.shopping_list);
         shoppingListView.setAdapter(shoppingListAdapter);
@@ -79,6 +80,7 @@ public class ShoppingListActivity extends ActionBarActivity {
                     Log.i(this.getClass().getName(), "Creating Item:" + newItemName);
                     try {
                         ShoppingItem item = ShoppingListActivity.this.shoppingListDatabase.createNewItem(shoppingList, newItemName);
+
                         shoppingListAdapter.addItem(item);
                     }
                     catch(PersistingFailedException e){

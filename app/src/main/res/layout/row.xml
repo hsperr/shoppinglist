@@ -9,7 +9,7 @@ android:descendantFocusability="blocksDescendants"
 android:longClickable="true">
 
 <CheckBox
-    android:id="@+id/checkBox1"
+    android:id="@+id/checkItemOff"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:focusable="false"
@@ -18,7 +18,17 @@ android:longClickable="true">
     android:text="" />
 
 <TextView
-    android:id="@+id/textView1"
+    android:id="@+id/itemName"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="TextView" />
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        />
+    <TextView
+    android:id="@+id/itemPrice"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="TextView" />

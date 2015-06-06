@@ -1,24 +1,23 @@
 package shoppinglist.com.shoppinglist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.database.Cursor;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Location;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CursorAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +27,6 @@ import shoppinglist.com.shoppinglist.Location.LocationProvider;
 import shoppinglist.com.shoppinglist.database.ShoppingListDatabase;
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
-import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 
 /**
  * Created by hsperr on 12/26/14.
@@ -70,57 +68,68 @@ public class ShoppingListAdapter extends BaseAdapter{
             convertView = inflater.inflate(R.layout.row, parent, false);
         }
 
-        final TextView name = (TextView)convertView.findViewById(R.id.textView1);
-        final CheckBox cb = (CheckBox)convertView.findViewById(R.id.checkBox1);
+        final TextView itemNameText = (TextView)convertView.findViewById(R.id.itemName);
+        final TextView itemPriceText = (TextView)convertView.findViewById(R.id.itemPrice);
+        final CheckBox cb = (CheckBox)convertView.findViewById(R.id.checkItemOff);
 
-        name.setText(items.get(position).getItemName());
-        cb.setChecked(items.get(position).isBought());
+        final ShoppingItem item = items.get(position);
 
+        itemNameText.setText(item.getItemName());
+        cb.setChecked(item.isBought());
+
+        itemPriceText.setText("" + item.getPrice());
         if(cb.isChecked()){
-            name.setTextColor(Color.GRAY);
+            itemNameText.setTextColor(Color.GRAY);
         }else{
-            name.setTextColor(Color.BLACK);
+            itemNameText.setTextColor(Color.BLACK);
         }
 
         convertView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                cb.toggle();
-
-                Log.i("checkbox", items.get(position).getItemName() + " p " + position + " " + cb.isChecked());
-
-
-                if(cb.isChecked()){
-                    name.setTextColor(Color.GRAY);
-                }else{
-                    name.setTextColor(Color.BLACK);
-                }
-                try {
-                    ShoppingItem item = items.get(position);
-                    item.setBought(cb.isChecked());
-                    LocationProvider locationProvider = new DummyLocationProvider();
-                    Location location = locationProvider.getLocation();
-                    item.setLatitude(location.getLatitude());
-                    item.setLatitude(location.getLongitude());
-                    item.setTimestamp(new Date());
-                    shoppingListDatabase.updateItem(item);
-                } catch (PersistingFailedException e) {
-                    Toast.makeText(context, "Updating item failed.", Toast.LENGTH_SHORT).show();
-                }
+                Log.i("CheckBoxShortClick", item + " cbChecked:" + cb.isChecked());
+                toggleChecked(cb, item,  "0.0");
             }
         });
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
                @Override
                public boolean onLongClick(View v) {
-                   Log.i("delete", items.get(position).getItemName() + " p " + position + " " + cb.isChecked());
-                   //TODO long click will eventually be price insertion, made it delete for now
-                   ShoppingItem item = items.remove(position);
-                   try {
-                       shoppingListDatabase.removeItem(item);
-
-                   } catch (PersistingFailedException e) {
-                       Toast.makeText(context, "removing item failed.", Toast.LENGTH_SHORT).show();
+                   if(cb.isChecked()){
+                       return true;
                    }
-                   ShoppingListAdapter.this.notifyDataSetChanged();
+
+                   Log.i("CheckBoxLongClick", item + " cbChecked:" + cb.isChecked());
+
+                   AlertDialog.Builder builder = new AlertDialog.Builder(ShoppingListAdapter.this.context);
+                   final EditText input = new EditText(ShoppingListAdapter.this.context);
+                   input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+                   builder.setTitle("Enter Price");
+                   builder.setView(input);
+                   builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                           String price = input.getText().toString();
+                           toggleChecked(cb, item, price);
+                       }
+                   });
+                   builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                           dialog.cancel();
+                       }
+                   });
+
+                   AlertDialog dialog = builder.create();
+                   dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                       @Override
+                       public void onShow(DialogInterface dialog) {
+                           InputMethodManager imm = (InputMethodManager) ShoppingListAdapter.this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                           imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+                       }
+                   });
+
+                   dialog.show();
+
                    return true;
                }
            }
@@ -128,6 +137,37 @@ public class ShoppingListAdapter extends BaseAdapter{
 
         return convertView;
     }
+
+    //TODO pull is checked outside and unentangle all the dependencies
+    private void toggleChecked(CheckBox cb, ShoppingItem item, String price) {
+        cb.toggle();
+
+        item.setBought(cb.isChecked());
+        item.setPrice(Double.parseDouble(price));
+
+        if(cb.isChecked()) {
+            LocationProvider locationProvider = new DummyLocationProvider();
+            Location location = locationProvider.getLocation();
+
+            item.setLatitude(location.getLatitude());
+            item.setLongitude(location.getLongitude());
+            item.setTimestamp(new Date());
+        }else{
+            item.setLatitude(0.0);
+            item.setLongitude(0.0);
+            item.setTimestamp(null);
+        }
+
+        try {
+            shoppingListDatabase.updateItem(item);
+        } catch (PersistingFailedException e) {
+            Toast.makeText(context, "Updating item failed.", Toast.LENGTH_SHORT).show();
+        }
+
+        Log.d("ItemToggle",item.toString());
+        ShoppingListAdapter.this.notifyDataSetChanged();
+    }
+
 
     public void addItem(ShoppingItem item) {
         this.items.add(item);
