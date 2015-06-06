@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -23,8 +22,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import shoppinglist.com.shoppinglist.Location.DummyLocationProvider;
-import shoppinglist.com.shoppinglist.Location.LocationProvider;
+import shoppinglist.com.shoppinglist.location.DummyLocationProvider;
+import shoppinglist.com.shoppinglist.location.LocationProvider;
 import shoppinglist.com.shoppinglist.database.ShoppingListDatabase;
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;

@@ -1,13 +1,12 @@
 package shoppinglist.com.shoppinglist;
 
-import android.location.Location;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,23 +18,23 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import shoppinglist.com.shoppinglist.camera.CameraActivity;
 import shoppinglist.com.shoppinglist.database.DatabaseHelper;
 import shoppinglist.com.shoppinglist.database.ShoppingListDatabase;
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
-import shoppinglist.com.shoppinglist.networking.NetBlaster;
+import shoppinglist.com.shoppinglist.network.NetBlaster;
 
 public class ShoppingListActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     ShoppingList shoppingList = null;
     ShoppingListDatabase shoppingListDatabase = null;
-    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +46,19 @@ public class ShoppingListActivity extends ActionBarActivity implements GoogleApi
         //TODO remove singleton or make getInstance api cleaner
         //this.deleteDatabase(DatabaseHelper.DATABASE_NAME);
         shoppingListDatabase = DatabaseHelper.getInstance(getApplicationContext());
-
+        List<ShoppingItem> items  = null;
         try {
-            shoppingList = shoppingListDatabase.getCurrentShoppingList();
+            shoppingList = shoppingListDatabase.getInitalShoppingList();
+            items = shoppingList.getItems();
         } catch (PersistingFailedException e) {
             Toast.makeText(this, "Couldn't get ShoppingList.", Toast.LENGTH_SHORT).show();
+            items = new ArrayList<ShoppingItem>();
         }
 
-        List<ShoppingItem> items = shoppingList.getItems();
-
         final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, items, shoppingListDatabase);
+
         final ListView shoppingListView = (ListView)findViewById(R.id.shopping_list);
         shoppingListView.setAdapter(shoppingListAdapter);
-
 
         Button clearButton = (Button)findViewById(R.id.clear_button);
         clearButton.setOnClickListener(new View.OnClickListener() {
@@ -69,12 +68,12 @@ public class ShoppingListActivity extends ActionBarActivity implements GoogleApi
                 inputText.setText("");
                 try {
                     shoppingListDatabase.clearList(shoppingList);
+                    shoppingListAdapter.clear();
+                    shoppingListAdapter.notifyDataSetChanged();
                 }
                 catch(PersistingFailedException e){
                     Toast.makeText(ShoppingListActivity.this, "Clearing List failed.", Toast.LENGTH_SHORT).show();
                 }
-                shoppingListAdapter.clear();
-                shoppingListAdapter.notifyDataSetChanged();
 
             }
         });
@@ -91,7 +90,6 @@ public class ShoppingListActivity extends ActionBarActivity implements GoogleApi
                     Log.i(this.getClass().getName(), "Creating Item:" + newItemName);
                     try {
                         ShoppingItem item = ShoppingListActivity.this.shoppingListDatabase.createNewItem(shoppingList, newItemName);
-
                         shoppingListAdapter.addItem(item);
                     }
                     catch(PersistingFailedException e){
@@ -147,12 +145,18 @@ public class ShoppingListActivity extends ActionBarActivity implements GoogleApi
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+
+            case R.id.action_scan:
+                startActivity(new Intent(this, CameraActivity.class));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onConnected(Bundle bundle) {

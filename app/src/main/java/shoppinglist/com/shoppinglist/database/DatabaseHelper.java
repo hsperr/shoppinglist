@@ -91,7 +91,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
     }
 
     @Override
-    public ShoppingList getCurrentShoppingList() throws PersistingFailedException {
+    public ShoppingList getInitalShoppingList() throws PersistingFailedException {
         try {
             Dao<ShoppingList, Integer> dao = this.getShoppingListDao();
             QueryBuilder<ShoppingList, Integer> builder = dao.queryBuilder();

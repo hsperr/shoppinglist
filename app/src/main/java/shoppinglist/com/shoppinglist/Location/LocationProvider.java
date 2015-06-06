@@ -1,4 +1,4 @@
-package shoppinglist.com.shoppinglist.Location;
+package shoppinglist.com.shoppinglist.location;
 
 import android.location.Location;
 

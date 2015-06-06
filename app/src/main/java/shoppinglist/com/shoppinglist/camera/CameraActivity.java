@@ -44,14 +44,14 @@ public class CameraActivity extends ActionBarActivity implements View.OnClickLis
         mCamera = CameraUtils.selectCamera(this, Camera.CameraInfo.CAMERA_FACING_BACK);
         if (mCamera != null) {
             if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) {
-                mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                    @Override
-                    public void onAutoFocus(boolean success, Camera camera) {
-                        if (success) {
-                            mVibrator.vibrate(50);
-                        }
-                    }
-                });
+              //mCamera.autoFocus(new Camera.AutoFocusCallback() {
+              //    @Override
+              //    public void onAutoFocus(boolean success, Camera camera) {
+              //        if (success) {
+              //            mVibrator.vibrate(50);
+              //        }
+              //    }
+              //});
             }
 
             mSurface.setCamera(mCamera);

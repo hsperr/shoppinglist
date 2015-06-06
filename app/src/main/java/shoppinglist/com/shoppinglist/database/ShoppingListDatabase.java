@@ -9,7 +9,7 @@ import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
  */
 public interface ShoppingListDatabase {
 
-    ShoppingList getCurrentShoppingList() throws PersistingFailedException;
+    ShoppingList getInitalShoppingList() throws PersistingFailedException;
 
     ShoppingList createNewShoppingList(String name) throws PersistingFailedException;
 
