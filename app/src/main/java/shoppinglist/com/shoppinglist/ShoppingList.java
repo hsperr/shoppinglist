@@ -1,5 +1,6 @@
 package shoppinglist.com.shoppinglist;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import shoppinglist.com.shoppinglist.camera.CameraActivity;
 import shoppinglist.com.shoppinglist.data.DummyLoader;
 import shoppinglist.com.shoppinglist.data.FileHandler;
 
@@ -106,8 +108,13 @@ public class ShoppingList extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+
+            case R.id.action_scan:
+                startActivity(new Intent(this, CameraActivity.class));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
