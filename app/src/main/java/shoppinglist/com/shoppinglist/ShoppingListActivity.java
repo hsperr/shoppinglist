@@ -32,31 +32,24 @@ import shoppinglist.com.shoppinglist.network.NetBlaster;
 
 public class ShoppingListActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-
     ShoppingList shoppingList = null;
     ShoppingListDatabase shoppingListDatabase = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_shopping_list);
 
-
-        //TODO remove singleton or make getInstance api cleaner
-        //this.deleteDatabase(DatabaseHelper.DATABASE_NAME);
         shoppingListDatabase = DatabaseHelper.getInstance(getApplicationContext());
-        List<ShoppingItem> items  = null;
+
+        long listId = getIntent().getLongExtra("listid", 0);
         try {
-            shoppingList = shoppingListDatabase.getInitalShoppingList();
-            items = shoppingList.getItems();
+            shoppingList = shoppingListDatabase.getList(listId);
         } catch (PersistingFailedException e) {
             Toast.makeText(this, "Couldn't get ShoppingList.", Toast.LENGTH_SHORT).show();
-            items = new ArrayList<ShoppingItem>();
         }
 
-        final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, items, shoppingListDatabase);
-
+        final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, shoppingList, shoppingListDatabase);
         final ListView shoppingListView = (ListView)findViewById(R.id.shopping_list);
         shoppingListView.setAdapter(shoppingListAdapter);
 

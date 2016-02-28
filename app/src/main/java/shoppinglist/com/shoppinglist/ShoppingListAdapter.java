@@ -18,12 +18,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
+import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 import shoppinglist.com.shoppinglist.location.DummyLocationProvider;
-import shoppinglist.com.shoppinglist.location.LocationProvider;
 import shoppinglist.com.shoppinglist.database.ShoppingListDatabase;
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
@@ -32,29 +32,29 @@ public class ShoppingListAdapter extends BaseAdapter{
 
     private final ShoppingListDatabase shoppingListDatabase;
     private final Context context;
-    private List<ShoppingItem> items = null;
+    private ShoppingList list = null;
     private Comparator<? super ShoppingItem> compareItems;
 
-    public ShoppingListAdapter(Context context, List<ShoppingItem> items, ShoppingListDatabase shoppingListDatabase) {
-        this.context=context;
-        this.items=items;
-        this.shoppingListDatabase=shoppingListDatabase;
-        this.compareItems=new ItemComparator();
+    public ShoppingListAdapter(Context context, ShoppingList list, ShoppingListDatabase shoppingListDatabase) {
+        this.context = context;
+        this.list = list;
+        this.shoppingListDatabase = shoppingListDatabase;
+        this.compareItems = new ItemComparator();
     }
 
     @Override
     public int getCount() {
-        return items.size();
+        return list.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return items.get(position);
+        return list.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return list.get(position).getListItemId();
     }
 
     @Override
@@ -69,9 +69,9 @@ public class ShoppingListAdapter extends BaseAdapter{
         final TextView itemPriceText = (TextView)convertView.findViewById(R.id.itemPrice);
         final CheckBox cb = (CheckBox)convertView.findViewById(R.id.checkItemOff);
 
-        final ShoppingItem item = items.get(position);
+        final ShoppingItem item = this.list.get(position);
 
-        itemNameText.setText(item.getItemName());
+        itemNameText.setText(item.getName());
         cb.setChecked(item.isBought());
 
         itemPriceText.setText("" + item.getPrice());
@@ -87,6 +87,7 @@ public class ShoppingListAdapter extends BaseAdapter{
                 toggleChecked(cb, item,  "0.0");
             }
         });
+
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
                @Override
                public boolean onLongClick(View v) {
@@ -135,10 +136,10 @@ public class ShoppingListAdapter extends BaseAdapter{
         cb.toggle();
 
         item.setBought(cb.isChecked());
-        item.setPrice(Double.parseDouble(price));
+        item.setPrice(new BigDecimal(price));
 
         if(cb.isChecked()) {
-            LocationProvider locationProvider = new DummyLocationProvider();
+            shoppinglist.com.shoppinglist.location.LocationProvider locationProvider = new DummyLocationProvider();
             Location location = locationProvider.getLocation();
 
             item.setLatitude(location.getLatitude());
@@ -162,12 +163,12 @@ public class ShoppingListAdapter extends BaseAdapter{
 
 
     public void addItem(ShoppingItem item) {
-        this.items.add(item);
+        this.list.add(item);
         this.notifyDataSetChanged();
     }
 
     public void clear() {
-        this.items.clear();
+        this.list.clear();
         this.notifyDataSetChanged();
     }
 }

@@ -21,4 +21,5 @@
     <string name="title_activity_shopping_list_list">ShoppingListListActivity</string>
 
     <string name="hello_world">Hello world I messed up git!</string>
+    <string name="shoppinglist">ShoppingList</string>
 </resources>

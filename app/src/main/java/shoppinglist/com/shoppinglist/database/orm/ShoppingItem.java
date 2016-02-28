@@ -3,6 +3,7 @@ package shoppinglist.com.shoppinglist.database.orm;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @DatabaseTable(tableName = "item_list")
@@ -14,7 +15,7 @@ public class ShoppingItem {
     ShoppingList model;
 
     @DatabaseField
-    String itemName;
+    String name;
 
     @DatabaseField
     double latitude;
@@ -23,7 +24,7 @@ public class ShoppingItem {
     double longitude;
 
     @DatabaseField
-    double price;
+    BigDecimal price;
 
     @DatabaseField
     boolean bought;
@@ -32,14 +33,23 @@ public class ShoppingItem {
     Date timestamp;
 
     public ShoppingItem() {
+
     }
 
-    public String getItemName() {
-        return itemName;
+    public ShoppingItem(String name, ShoppingList list) {
+        this.name = name;
+        this.timestamp = new Date();
+        this.model = list;
+        this.bought = false;
+        this.price = BigDecimal.ZERO;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public long getListItemId() {
@@ -66,11 +76,14 @@ public class ShoppingItem {
         this.longitude = longitude;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
+        if(this.price == null){
+            return BigDecimal.ZERO;
+        }
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -101,7 +114,7 @@ public class ShoppingItem {
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        builder.append("Item:"+this.getItemName());
+        builder.append("Item:"+this.getName());
         builder.append(" - ");
         builder.append("bought:"+this.isBought());
         builder.append(" - ");

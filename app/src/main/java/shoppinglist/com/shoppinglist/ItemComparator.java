@@ -1,7 +1,6 @@
 package shoppinglist.com.shoppinglist;
 
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
-import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 
 public class ItemComparator implements java.util.Comparator<ShoppingItem> {
 
@@ -14,6 +13,6 @@ public class ItemComparator implements java.util.Comparator<ShoppingItem> {
             return -1;
         }
 
-        return lhs.getItemName().compareTo(rhs.getItemName());
+        return lhs.getName().compareTo(rhs.getName());
     }
 }

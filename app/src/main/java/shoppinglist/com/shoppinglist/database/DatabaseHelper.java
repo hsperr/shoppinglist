@@ -11,7 +11,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
@@ -22,8 +22,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
 
     public static final String DATABASE_NAME = "shoppinglist";
     private static final int DATABASE_VERSION = 1;
-    private Dao<ShoppingList, Integer> shoppingListDao = null;
-    private Dao<ShoppingItem, Integer> listItemDao = null;
+
+    private Dao<ShoppingList, Integer> listDao = null;
+    private Dao<ShoppingItem, Integer> itemDao = null;
 
     static private DatabaseHelper instance;
 
@@ -33,32 +34,33 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
         }
         return instance;
     }
+
     private DatabaseHelper(Context c){
         super(c, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public Dao<ShoppingItem, Integer> getShoppingItemDao(){
-        if (listItemDao==null){
+    public Dao<ShoppingItem, Integer> getItemDao(){
+        if (itemDao ==null){
             try {
-                listItemDao=getDao(ShoppingItem.class);
+                itemDao = getDao(ShoppingItem.class);
             } catch (SQLException e) {
                 Log.e(DatabaseHelper.class.getName(), "Could not get DAO object.",e);
                 throw new RuntimeException(e);
             }
         }
-        return listItemDao;
+        return itemDao;
     }
 
-    public Dao<ShoppingList, Integer> getShoppingListDao(){
-        if (shoppingListDao==null){
+    public Dao<ShoppingList, Integer> getListDao(){
+        if (listDao == null){
             try {
-                shoppingListDao=getDao(ShoppingList.class);
+                listDao = getDao(ShoppingList.class);
             } catch (SQLException e) {
                 Log.e(DatabaseHelper.class.getName(), "Could not get DAO object.",e);
                 throw new RuntimeException(e);
             }
         }
-        return shoppingListDao;
+        return listDao;
     }
 
     @Override
@@ -88,18 +90,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
     }
 
     @Override
-    public ShoppingList getInitalShoppingList() throws PersistingFailedException {
+    public List<ShoppingList> getLists() throws PersistingFailedException {
+        Dao<ShoppingList, Integer> dao = this.getListDao();
+        List<ShoppingList> list = new ArrayList<>();
         try {
-            Dao<ShoppingList, Integer> dao = this.getShoppingListDao();
+            list = dao.queryForAll();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public ShoppingList getList(long id) throws PersistingFailedException {
+        try {
+            Dao<ShoppingList, Integer> dao = this.getListDao();
             QueryBuilder<ShoppingList, Integer> builder = dao.queryBuilder();
-            builder.where().eq("last_used", true);
+            builder.where().eq("listId", id);
 
             List<ShoppingList> list = dao.query(builder.prepare());
             assert list.size()<=1;
 
             if(list.size()==0){
                 Log.w(this.getClass().getName(), "No Shopping list found, creating new one.");
-                return this.createNewShoppingList("default");
+                return this.createNewList("default");
             }else{
                 return list.get(0);
             }
@@ -110,14 +124,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
     }
 
     @Override
-    public ShoppingList createNewShoppingList(String name) throws PersistingFailedException {
-        Dao<ShoppingList, Integer> dao = this.getShoppingListDao();
-        Date creationDate = new Date();
+    public ShoppingList createNewList(String name) throws PersistingFailedException {
+        Dao<ShoppingList, Integer> dao = this.getListDao();
 
-        ShoppingList shoppingList = new ShoppingList();
-        shoppingList.setListName(name);
-        shoppingList.setLast_used(true);
-        shoppingList.setCreation_date(creationDate);
+        ShoppingList shoppingList = new ShoppingList(name);
 
         try {
             dao.assignEmptyForeignCollection(shoppingList, "items");
@@ -131,7 +141,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
 
     @Override
     public void updateItem(ShoppingItem item) throws PersistingFailedException {
-        Dao<ShoppingItem,Integer> dao = this.getShoppingItemDao();
+        Dao<ShoppingItem,Integer> dao = this.getItemDao();
         try {
             dao.update(item);
         } catch (SQLException e) {
@@ -142,7 +152,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
 
     @Override
     public void removeItem(ShoppingItem item) throws PersistingFailedException {
-         Dao<ShoppingItem,Integer> dao = this.getShoppingItemDao();
+         Dao<ShoppingItem,Integer> dao = this.getItemDao();
         try {
             dao.delete(item);
         } catch (SQLException e) {
@@ -153,7 +163,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
 
     @Override
     public void clearList(ShoppingList shoppingList) throws PersistingFailedException {
-          Dao<ShoppingItem,Integer> dao = this.getShoppingItemDao();
+          Dao<ShoppingItem,Integer> dao = this.getItemDao();
         try {
             dao.delete(shoppingList.getItems());
         } catch (SQLException e) {
@@ -164,12 +174,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingL
 
     @Override
     public ShoppingItem createNewItem(ShoppingList shoppingList, String newItemName) throws PersistingFailedException {
-        ShoppingItem item = new ShoppingItem();
-        item.setBought(false);
-        item.setItemName(newItemName);
-        item.setModel(shoppingList);
+        ShoppingItem item = new ShoppingItem(newItemName, shoppingList);
         try {
-            this.getShoppingItemDao().create(item);
+            this.getItemDao().create(item);
         } catch (SQLException e) {
             Log.e(this.getClass().getName(), "Error inserting in SQL database"+e.getMessage());
             throw new PersistingFailedException(e);

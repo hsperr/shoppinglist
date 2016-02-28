@@ -1,10 +1,13 @@
 package shoppinglist.com.shoppinglist.database.orm;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,59 +18,89 @@ public class ShoppingList {
     long listId;
 
     @DatabaseField
-    String list_name;
+    String name;
 
     @DatabaseField
-    Date creation_date;
-
-    @DatabaseField
-    boolean last_used;
+    Date created;
 
     @ForeignCollectionField
     private ForeignCollection<ShoppingItem> items;
 
+    private List<ShoppingItem> cachedItems = null;
+
+    public ShoppingList(String name) {
+        this.name = name;
+        this.created = new Date();
+    }
+
+    public ShoppingList() {
+
+    }
+
     public List<ShoppingItem> getItems() {
-        ArrayList<ShoppingItem> itemList = new ArrayList<>();
-        for(ShoppingItem item :items){
-            itemList.add(item);
+        if (cachedItems == null) {
+            ArrayList<ShoppingItem> itemList = new ArrayList<>();
+            for(ShoppingItem item :items){
+                itemList.add(item);
+            }
+            this.cachedItems = itemList;
         }
-        return itemList;
+        return this.cachedItems;
     }
 
-    public void setItems(ForeignCollection<ShoppingItem> items) {
-        this.items = items;
+    public void setItems(List<ShoppingItem> items) {
+        this.clear();
+        for (ShoppingItem item: items) {
+            this.add(item);
+        }
     }
 
-    public String getList_name() {
-        return list_name;
+    public void add(ShoppingItem item) {
+        cachedItems.add(item);
+        items.add(item);
+    }
+
+    public void remove(ShoppingItem item) {
+        if(items.remove(item)) {
+            cachedItems.remove(item);
+        }
+    }
+
+    public void clear() {
+        this.items.clear();
+        this.cachedItems.clear();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setListName(String list_name) {
-        this.list_name = list_name;
+        this.name = list_name;
     }
 
-    public Date getCreation_date() {
-        return creation_date;
-    }
-
-    public void setCreation_date(Date creation_date) {
-        this.creation_date = creation_date;
-    }
-
-    public boolean isLast_used() {
-        return last_used;
-    }
-
-    public void setLast_used(boolean last_used) {
-        this.last_used = last_used;
+    public Date getCreated() {
+        return created;
     }
 
     public long getListId() {
         return listId;
     }
 
-    public void setListId(long listId) {
-        this.listId = listId;
+    public ShoppingItem get(int position) {
+        return this.cachedItems.get(position);
     }
 
+    public int size() {
+        return this.getItems().size();
+    }
+
+    public BigDecimal getPrice() {
+        BigDecimal price = BigDecimal.ZERO;
+        for (ShoppingItem item: this.getItems()) {
+            Log.i("Prices", this.getName()+""+item.getPrice());
+            price = price.add(item.getPrice());
+        }
+        return price;
+    }
 }
