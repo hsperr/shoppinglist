@@ -18,9 +18,6 @@ import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedExcepti
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 
-/**
- * Created by hsperr on 3/28/15.
- */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper implements ShoppingListDatabase {
 
     public static final String DATABASE_NAME = "shoppinglist";

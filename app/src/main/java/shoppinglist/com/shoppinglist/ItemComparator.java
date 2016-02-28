@@ -3,9 +3,6 @@ package shoppinglist.com.shoppinglist;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 
-/**
- * Created by hsperr on 4/4/15.
- */
 public class ItemComparator implements java.util.Comparator<ShoppingItem> {
 
     @Override

@@ -28,9 +28,6 @@ import shoppinglist.com.shoppinglist.database.ShoppingListDatabase;
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 
-/**
- * Created by hsperr on 12/26/14.
- */
 public class ShoppingListAdapter extends BaseAdapter{
 
     private final ShoppingListDatabase shoppingListDatabase;

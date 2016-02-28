@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by hsperr on 12/26/14.
- */
 @DatabaseTable(tableName="shopping_list")
 public class ShoppingList {
     @DatabaseField(generatedId=true)

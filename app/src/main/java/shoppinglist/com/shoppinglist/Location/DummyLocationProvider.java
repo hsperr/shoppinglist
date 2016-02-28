@@ -2,9 +2,6 @@ package shoppinglist.com.shoppinglist.location;
 
 import android.location.Location;
 
-/**
- * Created by hsperr on 4/4/15.
- */
 public class DummyLocationProvider implements LocationProvider{
 
     private double latitude=32.00000;

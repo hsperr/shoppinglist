@@ -4,9 +4,6 @@ import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedExcepti
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 
-/**
- * Created by hsperr on 3/30/15.
- */
 public interface ShoppingListDatabase {
 
     ShoppingList getInitalShoppingList() throws PersistingFailedException;

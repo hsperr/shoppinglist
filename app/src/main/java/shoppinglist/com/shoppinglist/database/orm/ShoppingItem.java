@@ -5,9 +5,6 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-/**
- * Created by hsperr on 3/28/15.
- */
 @DatabaseTable(tableName = "item_list")
 public class ShoppingItem {
     @DatabaseField(generatedId=true)
