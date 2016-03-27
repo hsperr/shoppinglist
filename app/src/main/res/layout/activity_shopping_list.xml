@@ -12,25 +12,17 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:inputType="text"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/shopping_list"
+        android:layout_alignEnd="@+id/shopping_list" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_add"
         android:id="@+id/add_button"
-        android:layout_below="@+id/shopping_input"
+        android:layout_alignTop="@+id/shopping_input"
         android:layout_alignRight="@+id/shopping_input"
         android:layout_alignEnd="@+id/shopping_input" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/TotalPrice"
-        android:id="@+id/TotalPrice"
-        android:layout_below="@+id/shopping_input"
-        android:layout_alignLeft="@+id/shopping_input"
-        />
 
     <ListView
         android:layout_width="wrap_content"
@@ -39,14 +31,5 @@
         android:layout_below="@+id/add_button"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_clear"
-        android:id="@+id/clear_button"
-        android:layout_below="@+id/shopping_input"
-        android:layout_toLeftOf="@+id/add_button"
-        android:layout_toStartOf="@+id/add_button" />
 
 </RelativeLayout>

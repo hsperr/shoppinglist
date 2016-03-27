@@ -3,18 +3,16 @@ package shoppinglist.com.shoppinglist.database.orm;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.joda.time.DateTime;
+
 import java.math.BigDecimal;
-import java.util.Date;
 
-@DatabaseTable(tableName = "item_list")
-public class ShoppingItem {
+@DatabaseTable(tableName = "items")
+public class ShoppingItem implements Item {
     @DatabaseField(generatedId=true)
-    long listItemId;
+    long id;
 
-    @DatabaseField(foreign=true, foreignAutoRefresh = true)
-    ShoppingList model;
-
-    @DatabaseField
+   @DatabaseField
     String name;
 
     @DatabaseField
@@ -27,20 +25,19 @@ public class ShoppingItem {
     BigDecimal price;
 
     @DatabaseField
-    boolean bought;
+    DateTime createdAt;
 
     @DatabaseField
-    Date timestamp;
+    DateTime boughtAt;
 
     public ShoppingItem() {
 
     }
 
-    public ShoppingItem(String name, ShoppingList list) {
+    public ShoppingItem(String name) {
         this.name = name;
-        this.timestamp = new Date();
-        this.model = list;
-        this.bought = false;
+        this.createdAt = DateTime.now();
+        this.boughtAt = null;
         this.price = BigDecimal.ZERO;
     }
 
@@ -50,14 +47,6 @@ public class ShoppingItem {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public long getListItemId() {
-        return listItemId;
-    }
-
-    public void setListItemId(long listItemId) {
-        this.listItemId = listItemId;
     }
 
     public double getLatitude() {
@@ -87,28 +76,20 @@ public class ShoppingItem {
         this.price = price;
     }
 
-    public boolean isBought() {
-        return bought;
+    public DateTime getBoughtAt() {
+        return boughtAt;
     }
 
-    public void setBought(boolean bought) {
-        this.bought = bought;
+    public void setBoughtAt(DateTime boughtAt) {
+        this.boughtAt = boughtAt;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public DateTime createdAt() {
+        return createdAt;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public ShoppingList getModel() {
-        return model;
-    }
-
-    public void setModel(ShoppingList model) {
-        this.model = model;
+    public void setCreatedAt(DateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -116,7 +97,7 @@ public class ShoppingItem {
         StringBuilder builder = new StringBuilder();
         builder.append("Item:"+this.getName());
         builder.append(" - ");
-        builder.append("bought:"+this.isBought());
+        builder.append("bought:"+this.getBoughtAt());
         builder.append(" - ");
         builder.append("price:"+this.getPrice());
         builder.append(" - ");
@@ -124,8 +105,16 @@ public class ShoppingItem {
         builder.append(" - ");
         builder.append("Lon:"+this.getLongitude());
         builder.append(" - ");
-        builder.append("Date:"+this.getTimestamp());
+        builder.append("Date:"+this.createdAt());
         return builder.toString();
     }
 
+    public long getId() {
+        return this.id;
+    }
+
+    @Override
+    public boolean isSeperator() {
+        return false;
+    }
 }

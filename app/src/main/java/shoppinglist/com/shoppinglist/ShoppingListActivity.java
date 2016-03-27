@@ -19,57 +19,27 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import shoppinglist.com.shoppinglist.camera.CameraActivity;
-import shoppinglist.com.shoppinglist.database.DatabaseHelper;
-import shoppinglist.com.shoppinglist.database.ShoppingListDatabase;
+import shoppinglist.com.shoppinglist.database.SQLItemRepository;
+import shoppinglist.com.shoppinglist.database.ItemRepository;
 import shoppinglist.com.shoppinglist.database.exceptions.PersistingFailedException;
-import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
-import shoppinglist.com.shoppinglist.database.orm.ShoppingList;
 import shoppinglist.com.shoppinglist.network.NetBlaster;
 
 public class ShoppingListActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    ShoppingList shoppingList = null;
-    ShoppingListDatabase shoppingListDatabase = null;
+    ItemRepository shoppingListDatabase = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
-        shoppingListDatabase = DatabaseHelper.getInstance(getApplicationContext());
+        shoppingListDatabase = SQLItemRepository.getInstance(this);
 
-        long listId = getIntent().getLongExtra("listid", 0);
-        try {
-            shoppingList = shoppingListDatabase.getList(listId);
-        } catch (PersistingFailedException e) {
-            Toast.makeText(this, "Couldn't get ShoppingList.", Toast.LENGTH_SHORT).show();
-        }
 
-        final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, shoppingList, shoppingListDatabase);
+        final ShoppingListAdapter shoppingListAdapter = new ShoppingListAdapter(this, shoppingListDatabase);
         final ListView shoppingListView = (ListView)findViewById(R.id.shopping_list);
         shoppingListView.setAdapter(shoppingListAdapter);
-
-        Button clearButton = (Button)findViewById(R.id.clear_button);
-        clearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView inputText = (TextView) findViewById(R.id.shopping_input);
-                inputText.setText("");
-                try {
-                    shoppingListDatabase.clearList(shoppingList);
-                    shoppingListAdapter.clear();
-                    shoppingListAdapter.notifyDataSetChanged();
-                }
-                catch(PersistingFailedException e){
-                    Toast.makeText(ShoppingListActivity.this, "Clearing List failed.", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
 
         Button addButton = (Button)findViewById(R.id.add_button);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -82,8 +52,8 @@ public class ShoppingListActivity extends ActionBarActivity implements GoogleApi
                     inputText.setText("");
                     Log.i(this.getClass().getName(), "Creating Item:" + newItemName);
                     try {
-                        ShoppingItem item = ShoppingListActivity.this.shoppingListDatabase.createNewItem(shoppingList, newItemName);
-                        shoppingListAdapter.addItem(item);
+                        ShoppingListActivity.this.shoppingListDatabase.createNewItem(newItemName);
+                        shoppingListAdapter.refresh();
                     }
                     catch(PersistingFailedException e){
                         Toast.makeText(ShoppingListActivity.this, "Inserting new item failed.", Toast.LENGTH_SHORT).show();
