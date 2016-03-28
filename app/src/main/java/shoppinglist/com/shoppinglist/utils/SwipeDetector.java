@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import shoppinglist.com.shoppinglist.ShoppingListAdapter;
+import shoppinglist.com.shoppinglist.database.SQLItemRepository;
 import shoppinglist.com.shoppinglist.database.orm.ShoppingItem;
 
 /**
@@ -75,21 +76,16 @@ public class SwipeDetector implements View.OnTouchListener {
                     if (deltaX < 0) {
                         Log.d(logTag, "Swipe Left to Right"+deltaX);
                         mSwipeDetected = Action.LR;
-                        this.view.setPadding((int)upX,0,0,0);
-
                         if (deltaX<-400){
-                            v.setVisibility(View.GONE);
                             this.adapter.removeItem(item);
+                            upX = 0;
                         }
-                        return true;
-                    }
-                    if (deltaX > 0) {
+                    } else if (deltaX > 0) {
                         Log.d(logTag, "Swipe Right to Left"+deltaX);
                         mSwipeDetected = Action.RL;
-                        this.view.setPadding((int)upX,0,0,0);
-
-                        return true;
                     }
+                    this.view.setPadding((int)upX,0,0,0);
+                    return true;
                 } else
 
                     // vertical swipe detection
