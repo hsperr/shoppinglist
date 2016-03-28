@@ -21,7 +21,7 @@ public class SeperatorItem implements Item {
     }
 
     public String getDisplayString() {
-        return fmt.print(date)+" ---- "+price.toString()+"Yen";
+        return fmt.print(date)+"                                               "+price.toString()+"Yen";
     }
 
     public void setPrice(BigDecimal price) {

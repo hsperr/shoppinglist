@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import shoppinglist.com.shoppinglist.database.SQLItemRepository;
 import shoppinglist.com.shoppinglist.database.orm.Item;
 import shoppinglist.com.shoppinglist.database.orm.SeperatorItem;
 import shoppinglist.com.shoppinglist.location.DummyLocationProvider;
@@ -104,7 +105,6 @@ public class ShoppingListAdapter extends BaseAdapter{
     public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = ((Activity)context).getLayoutInflater();
         if(getItemViewType(position)==ItemTypes.ITEM_TYPE_SEPERATOR.ordinal()) {
-
             if (convertView == null || convertView.findViewById(R.id.list_item_section_text) == null) {
                 convertView = inflater.inflate(R.layout.seperator, parent, false);
             }
@@ -234,8 +234,13 @@ public class ShoppingListAdapter extends BaseAdapter{
 
 
     public void removeItem(ShoppingItem item) {
+        try {
+            SQLItemRepository.getInstance(context).removeItem(item);
+        } catch (PersistingFailedException e) {
+            e.printStackTrace();
+        }
         this.list.remove(item);
-        this.notifyDataSetChanged();
+        this.refresh();
     }
 
     public void refresh() {
@@ -276,8 +281,4 @@ public class ShoppingListAdapter extends BaseAdapter{
         this.notifyDataSetChanged();
     }
 
-    public void clear() {
-        this.list.clear();
-        this.notifyDataSetChanged();
-    }
 }
