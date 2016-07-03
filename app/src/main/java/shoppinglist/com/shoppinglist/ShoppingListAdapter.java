@@ -51,10 +51,7 @@ public class ShoppingListAdapter extends BaseAdapter{
     private final Context context;
     private List<Item> list = new ArrayList<>();
 
-    //private SortedMap<DateTime, ShoppingItem> items = new TreeMap<>();
-
     private Map<String, SeperatorItem> seperators = new HashMap<>();
-    private Map<String, List<ShoppingItem>> items = new HashMap<>();
 
     private Comparator<? super ShoppingItem> compareItems;
 
@@ -105,32 +102,33 @@ public class ShoppingListAdapter extends BaseAdapter{
     public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = ((Activity)context).getLayoutInflater();
         if(getItemViewType(position)==ItemTypes.ITEM_TYPE_SEPERATOR.ordinal()) {
-            if (convertView == null || convertView.findViewById(R.id.list_item_section_text) == null) {
+            if (convertView == null || convertView.findViewById(R.id.seperator_name) == null) {
                 convertView = inflater.inflate(R.layout.seperator, parent, false);
             }
-            final TextView sectionText = (TextView) convertView.findViewById(R.id.list_item_section_text);
+            final TextView sectionText = (TextView) convertView.findViewById(R.id.seperator_name);
+            final TextView sectionPrice = (TextView) convertView.findViewById(R.id.seperator_price);
 
             final SeperatorItem item = (SeperatorItem)this.list.get(position);
-            sectionText.setText(item.getDisplayString());
+            sectionText.setText(item.getDisplayDate());
+            sectionPrice.setText(item.getDisplayPrice());
 
         } else{
-            if (convertView == null || convertView.findViewById(R.id.itemName) == null) {
+            if (convertView == null || convertView.findViewById(R.id.checkItemOff) == null) {
                 convertView = inflater.inflate(R.layout.item_row, parent, false);
             }
 
-            final TextView itemNameText = (TextView)convertView.findViewById(R.id.itemName);
             final TextView itemPriceText = (TextView)convertView.findViewById(R.id.itemPrice);
             final CheckBox cb = (CheckBox)convertView.findViewById(R.id.checkItemOff);
 
             final ShoppingItem item = (ShoppingItem)this.list.get(position);
-            itemNameText.setText(item.getName());
+            cb.setText(item.getName());
             cb.setChecked(item.getBoughtAt() != null);
 
             itemPriceText.setText("" + item.getPrice());
             if(cb.isChecked()){
-                itemNameText.setTextColor(Color.GRAY);
+                cb.setTextColor(Color.GRAY);
             }else{
-                itemNameText.setTextColor(Color.BLACK);
+                cb.setTextColor(Color.BLACK);
             }
 
             convertView.setOnTouchListener(new SwipeDetector(convertView, this, item));
@@ -209,7 +207,8 @@ public class ShoppingListAdapter extends BaseAdapter{
 
             item.setLatitude(location.getLatitude());
             item.setLongitude(location.getLongitude());
-            item.setCreatedAt(DateTime.now());
+            item.setBoughtAt(DateTime.now());
+            cb.setEnabled(false);
         }else{
             BigDecimal oldPrice = item.getPrice();
             SeperatorItem seperator = seperators.get(item.getBoughtAt().toString(fmt));
@@ -218,7 +217,6 @@ public class ShoppingListAdapter extends BaseAdapter{
             item.setBoughtAt(null);
             item.setLatitude(0.0);
             item.setLongitude(0.0);
-            item.setCreatedAt(null);
         }
 
         try {
@@ -257,7 +255,7 @@ public class ShoppingListAdapter extends BaseAdapter{
 
             BigDecimal price = BigDecimal.ZERO;
             for(ShoppingItem item: databaseItems){
-                if(lastSeperatorDate.isAfter(item.createdAt())) {
+                if(lastSeperatorDate.isAfter(item.getBoughtAt())) {
                     lastSeperator.setPrice(price);
                     price = BigDecimal.ZERO;
 

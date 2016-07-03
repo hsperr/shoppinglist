@@ -11,6 +11,7 @@ public class SeperatorItem implements Item {
     private DateTimeFormatter fmt = DateTimeFormat.forPattern("Y-M-d");
     private final DateTime date;
     private BigDecimal price = BigDecimal.ZERO;
+    private int displayPrice;
 
     public SeperatorItem(DateTime date) {
         this.date = date;
@@ -18,10 +19,6 @@ public class SeperatorItem implements Item {
 
     public DateTime createdAt() {
         return date;
-    }
-
-    public String getDisplayString() {
-        return fmt.print(date)+"                                               "+price.toString()+"Yen";
     }
 
     public void setPrice(BigDecimal price) {
@@ -44,5 +41,9 @@ public class SeperatorItem implements Item {
 
     public BigDecimal getPrice() {
         return price;
+    }
+
+    public String getDisplayPrice() {
+        return price.toString()+" ¥";
     }
 }
